@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gourav | Full-Stack Developer</title>
+  <style>
+    /* ========== CSS RESET & VARIABLES ========== */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --neon-cyan: #00f5ff;
+      --neon-purple: #b24bff;
+      --neon-blue: #4d7cff;
+      --bg-dark: #0a0a0f;
+      --bg-card: rgba(15, 15, 25, 0.6);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ========== CURSOR GLOW ========== */
+    .cursor-glow {
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 245, 255, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+
+    /* ========== ANIMATED BACKGROUND ========== */
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -2;
+    }
+
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: float-particle 15s infinite linear;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.5;
+      }
+
+      90% {
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* ========== NAVIGATION ========== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--neon-cyan);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .menu-toggle span {
+      width: 25px;
+      height: 2px;
+      background: var(--neon-cyan);
+      transition: all 0.3s ease;
+    }
+
+    /* ========== SECTIONS BASE ========== */
+    section {
+      min-height: 100vh;
+      padding: 6rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s ease;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 2px;
+      box-shadow: 0 0 20px var(--neon-cyan);
+    }
+
+    /* ========== HERO SECTION ========== */
+    #hero {
+      position: relative;
+      text-align: center;
+      padding-top: 8rem;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .profile-container {
+      position: relative;
+      width: 220px;
+      height: 220px;
+    }
+
+    .profile-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      background: linear-gradient(var(--bg-dark), var(--bg-dark)) padding-box,
+        linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-blue)) border-box;
+      animation: rotate-ring 8s linear infinite;
+    }
+
+    .profile-ring::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      opacity: 0.3;
+      filter: blur(20px);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes rotate-ring {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+      }
+    }
+
+    .profile-image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) translateY(0);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) translateY(-10px);
+      }
+    }
+
+    .hero-text h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--text-primary), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-text .title {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .hero-text .title span {
+      color: var(--neon-cyan);
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      color: var(--bg-dark);
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px rgba(0, 245, 255, 0.5);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-indicator .arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--neon-cyan);
+      border-bottom: 2px solid var(--neon-cyan);
+      transform: rotate(45deg);
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(10px);
+      }
+    }
+
+    /* ========== GLASS CARDS ========== */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 10px 40px rgba(0, 245, 255, 0.1);
+    }
+
+    /* ========== ABOUT SECTION ========== */
+    #about .content {
+      max-width: 800px;
+      text-align: center;
+    }
+
+    #about p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    #about .highlight {
+      color: var(--neon-cyan);
+      font-weight: 500;
+    }
+
+    /* ========== SKILLS SECTION ========== */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .skill-card {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .skill-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--bg-dark);
+      transition: all 0.3s ease;
+    }
+
+    .skill-card:hover .skill-icon {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+    }
+
+    .skill-name {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* ========== WORKING ON SECTION ========== */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    .project-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .project-card:hover::before {
+      left: 100%;
+    }
+
+    .project-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--neon-cyan);
+    }
+
+    .project-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* ========== COLLABORATION SECTION ========== */
+    .collab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .collab-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .collab-card h3 .icon {
+      font-size: 1.5rem;
+    }
+
+    .collab-card ul {
+      list-style: none;
+    }
+
+    .collab-card li {
+      padding: 0.5rem 0;
+      color: var(--text-secondary);
+      position: relative;
+      padding-left: 1.5rem;
+    }
+
+    .collab-card li::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: var(--neon-cyan);
+    }
+
+    /* ========== INTERESTS SECTION ========== */
+    .interests-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      max-width: 800px;
+    }
+
+    .interest-tag {
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .interest-tag .emoji {
+      font-size: 1.2rem;
+    }
+
+    /* ========== SOCIAL LINKS ========== */
+    #social {
+      min-height: auto;
+      padding: 4rem 2rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .social-link {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .social-link:hover::before {
+      opacity: 1;
+    }
+
+    .social-link span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .social-link:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 245, 255, 0.3);
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), var(--neon-blue), transparent);
+      animation: line-flow 3s linear infinite;
+    }
+
+    @keyframes line-flow {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    footer p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    footer .heart {
+      color: var(--neon-purple);
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    /* ========== CTA BANNER ========== */
+    .cta-banner {
+      max-width: 800px;
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .cta-banner p {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .cta-banner p::before,
+    .cta-banner p::after {
+      content: '"';
+      color: var(--neon-cyan);
+      font-size: 1.5rem;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(10, 10, 15, 0.95);
+        backdrop-filter: blur(20px);
+        transition: right 0.3s ease;
+      }
+
+      .nav-links.active {
+        right: 0;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+
+      .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+      }
+
+      .hero-text h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-text .title {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .profile-container {
+        width: 180px;
+        height: 180px;
+      }
+
+      .profile-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      section {
+        padding: 4rem 1rem;
+      }
+
+      .cursor-glow {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-text h1 {
+        font-size: 2rem;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .collab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Cursor Glow Effect -->
+  <div class="cursor-glow" id="cursor"></div>
+
+  <!-- Background Elements -->
+  <div class="bg-grid"></div>
+  <div class="bg-particles" id="particles"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">&lt;Gourav /&gt;</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#working">Projects</a></li>
+      <li><a href="#collab">Collaborate</a></li>
+      <li><a href="#interests">Interests</a></li>
+    </ul>
+    <div class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="visible">
+    <div class="hero-content">
+      <div class="profile-container">
+        <div class="profile-ring"></div>
+        <img src="profile.jpg" alt="Shikhar - Full-Stack Developer" class="profile-image"
+          onerror="this.src='https://via.placeholder.com/180/0a0a0f/00f5ff?text=S'">
+      </div>
+      <div class="hero-text">
+        <h1>Shikhar</h1>
+        <p class="title">🚀 Mern-Stack Software Developer | <span>React.JS & Web Enthusiast</span></p>
+        <a href="#collab" class="cta-button">Let's Collaborate</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll Down</span>
+      <div class="arrow"></div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2 class="section-title">About Me</h2>
+    <div class="content glass-card">
+      <p>
+        Hi, I’m <span class="highlight">Gourav Sonecha</span>, a
+        <span class="highlight">Computer Science student at MathuraDevi Group of Institutions rgpv</span>
+        and a passionate <span class="highlight">Java & Spring Boot Developer</span> based in
+        <span class="highlight">Indore, Madhya Pradesh, India</span>.
+        <br><br>
+
+        I specialize in building <span class="highlight">scalable backend systems</span> and
+        <span class="highlight">full-stack web applications</span> using
+        <span class="highlight"> REST APIs, SQL, MongoDB, MySQL, JavaScript, HTML, CSS, and React</span>.
+        I enjoy transforming complex business requirements into clean, efficient, and maintainable software solutions.
+        <br><br>
+
+        As a <span class="highlight">Backend Engineer & REST API Specialist</span>, I have hands-on experience in:
+        developing high-performance RESTful APIs, designing robust database architectures,
+        and optimizing application performance while following clean coding principles and best practices.
+        <br><br>
+
+        <span class="highlight">Expertise:</span><br>
+        ✔ Developing scalable REST APIs using Spring Boot<br>
+        ✔ Database design & management with MongoDB (NoSQL) & MySQL (RDBMS)<br>
+        ✔ API testing & documentation using Postman<br>
+        ✔ Writing clean, maintainable, and secure code<br>
+        ✔ Debugging and solving complex backend problems
+        <br><br>
+
+        <span class="highlight">What I Bring:</span><br>
+        • Strong foundation in Java and the Spring ecosystem<br>
+        • End-to-end API development experience — from design to deployment<br>
+        • Ability to work with both relational and non-relational databases<br>
+        • Passion for building efficient, scalable, and secure applications
+        <br><br>
+
+        Currently, I’m expanding my skill set in
+        <span class="highlight">microservices, cloud technologies, and system architecture</span>.
+        I’m always open to collaboration on innovative projects and eager to learn new technologies.
+        <br><br>
+
+        <span class="highlight">Experience:</span><br>
+        <span class="highlight">E-Skills Web LLP</span> — Full-Stack Developer<br>
+        October 2025 – Present
+        <br><br>
+
+        Let’s connect and build something impactful together 🚀
+      </p>
+    </div>
+  </section>
+
+
+  <!-- Skills Section -->
+  <section id="skills">
+    <h2 class="section-title">Tech Stack</h2>
+    <div class="skills-grid">
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">G</div>
+        <p class="skill-name">Github</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">JS</div>
+        <p class="skill-name">JavaScript</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">&lt;/&gt;</div>
+        <p class="skill-name">HTML</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">#</div>
+        <p class="skill-name">CSS</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">⚛</div>
+        <p class="skill-name">React</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">DB</div>
+        <p class="skill-name">SQL</p>
+      </div>
+
+      <!-- NEW SKILLS -->
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">Py</div>
+        <p class="skill-name">Python</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">Nd</div>
+        <p class="skill-name">Node.js</p>
+      </div>
+
+      <div class="glass-card skill-card">
+        <div class="skill-icon">API</div>
+        <p class="skill-name">Postman</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- Working On Section -->
+  <section id="working">
+    <h2 class="section-title">Currently Working On</h2>
+
+    <div class="projects-grid">
+
+      <div class="glass-card project-card">
+        <h3>🌐 Full-Stack Web Applications</h3>
+        <p>
+          Designing and developing end-to-end full-stack web applications with a strong focus on
+          scalability, performance, and clean architecture. I work across both frontend and backend
+          layers to deliver seamless user experiences backed by reliable server-side logic.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>☕ Java, Spring Boot & SQL Systems</h3>
+        <p>
+          Building robust backend systems using Java and Spring Boot, integrated with relational
+          databases like MySQL. I focus on writing clean, maintainable code, optimizing database
+          queries, and ensuring data consistency, security, and performance in real-world applications.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>⚡ RESTful API Development</h3>
+        <p>
+          Creating scalable and well-structured RESTful APIs following industry best practices.
+          This includes API design, validation, exception handling, authentication concepts,
+          and thorough testing using tools like Postman to ensure reliability and clarity.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>🧩 CRUD Operations & Backend Logic</h3>
+        <p>
+          Implementing complete CRUD (Create, Read, Update, Delete) operations across multiple projects.
+          I focus on clean data flow, efficient database interaction, proper API layering,
+          and writing reusable backend logic that supports future scalability.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>🚀 MERN Stack Full Applications</h3>
+        <p>
+          Developing full-fledged MERN stack applications using MongoDB, Express.js, React, and Node.js.
+          These applications include authentication flows, REST API integration, state management,
+          and responsive UI components, delivering modern and dynamic web experiences.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>🎨 Modern UI & Frontend Architecture</h3>
+        <p>
+          Exploring modern frontend development practices with React, focusing on reusable components,
+          clean state management, performance optimization, and responsive layouts that enhance
+          user experience across devices.
+        </p>
+      </div>
+
+      <div class="glass-card project-card">
+        <h3>☁️ Learning Microservices & System Design</h3>
+        <p>
+          Actively expanding my knowledge in microservices architecture, system design principles,
+          and cloud-ready applications. This includes understanding service communication,
+          scalability patterns, and best practices for building production-ready systems.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- Collaboration Section -->
+  <section id="collab">
+    <h2 class="section-title">Collaborate & Learn</h2>
+
+    <div class="collab-grid">
+
+      <div class="glass-card collab-card">
+        <h3><span class="icon">🤝</span> Open to Collaboration</h3>
+        <ul>
+          <li>Full-stack web development projects</li>
+          <li>React.js & MERN stack applications</li>
+          <li>Backend-driven systems (Java / Spring Boot)</li>
+          <li>Open-source contributions in web development</li>
+          <li>Beginner-friendly and scalable project ideas</li>
+        </ul>
+      </div>
+
+      <div class="glass-card collab-card">
+        <h3><span class="icon">💡</span> Seeking Guidance In</h3>
+        <ul>
+          <li>Advanced React patterns & state management</li>
+          <li>Frontend architecture & scalable UI design</li>
+          <li>Application performance optimization</li>
+          <li>System design & backend scalability</li>
+        </ul>
+      </div>
+
+      <div class="glass-card collab-card">
+        <h3><span class="icon">📚</span> Currently Learning</h3>
+        <ul>
+          <li>React.js (Hooks, Context API, component design)</li>
+          <li>Python for development & data processing</li>
+          <li>NumPy & Pandas for data handling and analysis</li>
+          <li>AI & intelligent systems fundamentals</li>
+          <li>Clean coding practices & modern workflows</li>
+        </ul>
+      </div>
+
+      <div class="glass-card collab-card">
+        <h3><span class="icon">💬</span> Ask Me About</h3>
+        <ul>
+          <li>Java, Spring Boot & REST APIs</li>
+          <li>JavaScript, HTML & CSS</li>
+          <li>SQL, MongoDB & database fundamentals</li>
+          <li>Full-stack development concepts</li>
+          <li>Project structure & learning roadmaps</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="cta-banner glass-card">
+      <p>
+        Passionate about building impactful software, exploring AI-driven solutions,
+        and learning modern technologies.
+        <strong>Let’s collaborate, learn, and grow together.</strong>
+      </p>
+    </div>
+  </section>
+
+
+  <!-- Interests Section -->
+  <section id="interests">
+    <h2 class="section-title">Interests & Fun Facts</h2>
+    <div class="interests-container">
+      <div class="glass-card interest-tag">
+        <span class="emoji">💻</span> Coding & Problem Solving
+      </div>
+      <div class="glass-card interest-tag">
+        <span class="emoji">🎧</span> Loves Listening to Songs
+      </div>
+      <div class="glass-card interest-tag">
+        <span class="emoji">✈️</span> Loves Travelling
+      </div>
+      <div class="glass-card interest-tag">
+        <span class="emoji">🔬</span> Explores New Tech
+      </div>
+      <div class="glass-card interest-tag">
+        <span class="emoji">🎵</span> Music Enthusiast
+      </div>
+      <div class="glass-card interest-tag">
+        <span class="emoji">🚀</span> Learning New Technologies
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Links -->
+  <section id="social">
+    <h2 class="section-title">Connect With Me</h2>
+    <div class="social-links">
+      <a href="https://github.com/AnshulKhatr" class="glass-card social-link" target="_blank" aria-label="GitHub">
+        <span>GH</span>
+      </a>
+      <a href="https://www.linkedin.com/in/gourav-sonecha/" class="glass-card social-link" target="_blank"
+        aria-label="LinkedIn">
+        <span>in</span>
+        <a href="mailto:gouravsonecha123@gmail.com" class="glass-card social-link" aria-label="Email">
+          <span>@</span>
+        </a>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-line"></div>
+    <p>Designed & Built with <span class="heart">♥</span> by Gourav © 2026 Gmail: gouravsonecha123@gmail.com</p>
+  </footer>
+
+  <script>
+    // ========== CURSOR GLOW EFFECT ==========
+    const cursor = document.getElementById('cursor');
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // ========== PARTICLE BACKGROUND ==========
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 30;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 15 + 's';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+
+      // Random colors
+      const colors = ['#00f5ff', '#b24bff', '#4d7cff'];
+      particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
+
+      particlesContainer.appendChild(particle);
+    }
+
+    // ========== SCROLL REVEAL ANIMATION ==========
+    const sections = document.querySelectorAll('section');
+
+    const revealSection = () => {
+      sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+
+        if (sectionTop < windowHeight * 0.8) {
+          section.classList.add('visible');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', revealSection);
+    revealSection(); // Initial check
+
+    // ========== MOBILE MENU TOGGLE ==========
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+      });
+    });
+
+    // ========== SMOOTH SCROLL FOR NAV LINKS ==========
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // ========== NAVBAR BACKGROUND ON SCROLL ==========
+    const nav = document.querySelector('nav');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        nav.style.background = 'rgba(10, 10, 15, 0.95)';
+      } else {
+        nav.style.background = 'rgba(10, 10, 15, 0.8)';
+      }
+    });
+  </script>
+</body>
+
+</html>
